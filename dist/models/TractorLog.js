@@ -53,6 +53,14 @@ TractorLog.init({
         allowNull: true,
         defaultValue: 0,
     },
+    packet_day: {
+        type: DataTypes.STRING(2),
+        allowNull: true,
+    },
+    packet_hour: {
+        type: DataTypes.STRING(2),
+        allowNull: true,
+    },
 }, {
     sequelize,
     tableName: 'tractor_logs',

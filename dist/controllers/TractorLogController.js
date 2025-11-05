@@ -15,7 +15,7 @@ export class TractorLogController {
                     .type("text")
                     .send("RECEIVED:\nInvalid JSON\nFAIL");
             }
-            const { pass, tractor_id, sent_at, lat, lon, distance, in_fuel, out_fuel, rpm, cell_signal, temp, retry_count, } = req.body;
+            const { pass, tractor_id, sent_at, lat, lon, distance, in_fuel, out_fuel, rpm, cell_signal, temp, retry_count, packet_day, packet_hour } = req.body;
             // Password check
             if (pass !== "123456") {
                 return res
@@ -28,7 +28,11 @@ export class TractorLogController {
                 !sent_at ||
                 lat === undefined ||
                 lon === undefined ||
-                rpm === undefined) {
+                rpm === undefined ||
+                in_fuel === undefined ||
+                out_fuel === undefined ||
+                packet_day === undefined ||
+                packet_hour === undefined) {
                 return res
                     .status(400)
                     .type("text")
@@ -57,6 +61,8 @@ export class TractorLogController {
                 cell_signal,
                 temp,
                 retry_count,
+                packet_day,
+                packet_hour
             });
             return res.status(200).type("text").send("RECEIVED:\nSAVED\nSUCCESS");
         }

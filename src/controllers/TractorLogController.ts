@@ -31,6 +31,8 @@ export class TractorLogController {
         cell_signal,
         temp,
         retry_count,
+        packet_day,
+        packet_hour
       } = req.body;
 
       // Password check
@@ -47,7 +49,11 @@ export class TractorLogController {
         !sent_at ||
         lat === undefined ||
         lon === undefined ||
-        rpm === undefined
+        rpm === undefined ||
+        in_fuel === undefined ||
+        out_fuel === undefined ||
+        packet_day === undefined ||
+        packet_hour === undefined
       ) {
         return res
           .status(400)
@@ -80,6 +86,8 @@ export class TractorLogController {
         cell_signal,
         temp,
         retry_count,
+        packet_day,
+        packet_hour
       });
 
       return res.status(200).type("text").send("RECEIVED:\nSAVED\nSUCCESS");

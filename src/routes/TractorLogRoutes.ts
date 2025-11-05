@@ -61,6 +61,12 @@ const router = Router();
  *               retry_count:
  *                 type: integer
  *                 example: 0
+ *               packet_day:
+ *                 type: string
+ *                 example: "0"
+ *               packet_hour:
+ *                 type: string
+ *                 example: "0"
  *     responses:
  *       200:
  *         description: Tractor log saved successfully

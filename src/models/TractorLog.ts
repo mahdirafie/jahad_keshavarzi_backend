@@ -14,6 +14,8 @@ export class TractorLog extends Model {
   declare cell_signal: number;
   declare temp: number;
   declare retry_count: number;
+  declare packet_dat: string;
+  declare packet_hour: string;
 }
 
 TractorLog.init(
@@ -67,6 +69,14 @@ TractorLog.init(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       defaultValue: 0,
+    },
+    packet_day: {
+      type: DataTypes.STRING(2),
+      allowNull: true,
+    },
+    packet_hour: {
+      type: DataTypes.STRING(2),
+      allowNull: true,
     },
   },
   {
