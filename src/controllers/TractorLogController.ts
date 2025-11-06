@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { TractorLog } from "../models/TractorLog.js";
 import { Tractor } from "../models/Tractor.js";
 import { Op } from "sequelize";
+import { stringify } from "querystring";
 
 export class TractorLogController {
   /**
@@ -10,7 +11,7 @@ export class TractorLogController {
    */
   static async createTractorLog(req: Request, res: Response) {
     try {
-      // Validate JSON structure
+      // Ensure JSON body is valid
       if (!req.body || typeof req.body !== "object") {
         return res
           .status(400)
@@ -18,87 +19,93 @@ export class TractorLogController {
           .send("RECEIVED:\nInvalid JSON\nFAIL");
       }
 
-      const {
-        pass,
-        tractor_id,
-        sent_at,
-        lat,
-        lon,
-        distance,
-        in_fuel,
-        out_fuel,
-        rpm,
-        cell_signal,
-        temp,
-        retry_count,
-        packet_day,
-        packet_hour,
-      } = req.body;
+      // Handle both single object and array
+      const logs = Array.isArray(req.body) ? req.body : [req.body];
 
-      // Password check
-      if (pass !== "123456") {
-        return res
-          .status(403)
-          .type("text")
-          .send("RECEIVED:\nACCESS DENIED\nFAIL");
+      for (const log of logs) {
+        const {
+          pass,
+          tractor_id,
+          sent_at,
+          lat,
+          lon,
+          distance,
+          in_fuel,
+          out_fuel,
+          rpm,
+          cell_signal,
+          temp,
+          retry_count,
+          packet_day,
+          packet_hour,
+        } = log;
+
+        // Password check
+        if (pass !== "123456") {
+          return res
+            .status(403)
+            .type("text")
+            .send("RECEIVED:\nACCESS DENIED\nFAIL");
+        }
+
+        // Basic validation
+        if (
+          !tractor_id ||
+          !sent_at ||
+          lat === undefined ||
+          lon === undefined ||
+          rpm === undefined ||
+          in_fuel === undefined ||
+          out_fuel === undefined ||
+          packet_day === undefined ||
+          packet_hour === undefined
+        ) {
+          return res
+            .status(400)
+            .type("text")
+            .send("RECEIVED:\nInvalid JSON\nFAIL");
+        }
+
+        // Ensure tractor exists
+        const tractor = await Tractor.findByPk(tractor_id);
+        if (!tractor) {
+          return res
+            .status(404)
+            .type("text")
+            .send("RECEIVED:\nInvalid JSON\nFAIL");
+        }
+
+        // Parse sent_at (ISO 8601 string) → Date
+        const sentAtDate = new Date(sent_at);
+        if (isNaN(sentAtDate.getTime())) {
+          return res
+            .status(400)
+            .type("text")
+            .send("RECEIVED:\nInvalid date\nFAIL");
+        }
+
+        // Create log
+        await TractorLog.create({
+          tractor_id,
+          sent_at: sentAtDate,
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lon),
+          distance: parseFloat(distance),
+          in_fuel: parseFloat(in_fuel),
+          out_fuel: parseFloat(out_fuel),
+          rpm: parseInt(rpm),
+          cell_signal: parseInt(cell_signal),
+          temp: parseFloat(temp),
+          retry_count: parseInt(retry_count),
+          packet_day,
+          packet_hour,
+        });
       }
 
-      // Basic validation for required fields
-      if (
-        !tractor_id ||
-        !sent_at ||
-        lat === undefined ||
-        lon === undefined ||
-        rpm === undefined ||
-        in_fuel === undefined ||
-        out_fuel === undefined ||
-        packet_day === undefined ||
-        packet_hour === undefined
-      ) {
-        return res
-          .status(400)
-          .type("text")
-          .send("RECEIVED:\nInvalid JSON\nFAIL");
-      }
-
-      // Check if tractor exists
-      const tractor = await Tractor.findByPk(tractor_id);
-      if (!tractor) {
-        return res
-          .status(404)
-          .type("text")
-          .send("RECEIVED:\nInvalid JSON\nFAIL");
-      }
-
-      // Parse sent_at (ISO 8601 string) → Date
-      const sentAtDate = new Date(sent_at);
-      if (isNaN(sentAtDate.getTime())) {
-        return res
-          .status(400)
-          .type("text")
-          .send("RECEIVED:\nInvalid date\nFAIL");
-      }
-
-      // Create log, parsing numeric fields on-the-fly
-      await TractorLog.create({
-        tractor_id,
-        sent_at: sentAtDate,
-        latitude: parseFloat(lat),
-        longitude: parseFloat(lon),
-        distance: parseFloat(distance),
-        in_fuel: parseFloat(in_fuel),
-        out_fuel: parseFloat(out_fuel),
-        rpm: parseInt(rpm),
-        cell_signal: parseInt(cell_signal),
-        temp: parseFloat(temp),
-        retry_count: parseInt(retry_count),
-        packet_day,
-        packet_hour,
-      });
-
+      // If all logs processed successfully
       return res.status(200).type("text").send("RECEIVED:\nSAVED\nSUCCESS");
     } catch (error) {
-      console.error(error);
+      console.error("Error saving tractor log:", error);
       return res.status(500).type("text").send("RECEIVED:\nInvalid JSON\nFAIL");
     }
   }
