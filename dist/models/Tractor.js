@@ -15,6 +15,10 @@ Tractor.init({
     national_code: {
         type: DataTypes.STRING(10),
         allowNull: false,
+        references: {
+            model: 'users',
+            key: 'national_code'
+        }
     },
     city: {
         type: DataTypes.STRING(20),

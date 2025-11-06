@@ -1,4 +1,4 @@
-import { Association, DataTypes, Model } from 'sequelize';
+import { Association, DataTypes, Model, HasManyGetAssociationsMixin } from 'sequelize';
 import sequelize from "../db/Sequelize.js"
 import { Tractor } from './Tractor.js';
 
@@ -8,10 +8,8 @@ export class User extends Model {
   declare phone: string;
   declare password: string;
 
-  declare tractors?: Tractor[];
-  static associations: {
-    tractors: Association<User, Tractor>;
-  };
+  // association mixin methods
+  declare getTractors: HasManyGetAssociationsMixin<Tractor>;
 }
 
 User.init(

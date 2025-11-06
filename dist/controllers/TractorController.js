@@ -35,7 +35,8 @@ export class TractorController {
             if (!user) {
                 return res.status(404).json({ message: "کاربر یافت نشد!" });
             }
-            if (!user.tractors || user.tractors.length === 0) {
+            const tractors = await user.getTractors();
+            if (!tractors || tractors.length === 0) {
                 return res.status(200).json({
                     message: "هیچ تراکتوری برای این کاربر پیدا نشد!",
                     tractors: [],
@@ -43,7 +44,7 @@ export class TractorController {
             }
             return res.status(200).json({
                 message: "با موفقیت دریافت شد",
-                tractors: user.tractors,
+                tractors
             });
         }
         catch (error) {

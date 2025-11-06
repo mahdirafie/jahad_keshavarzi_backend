@@ -1,10 +1,11 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../db/Sequelize.js';
+import { User } from './User.js';
 
 export class Tractor extends Model {
   declare id: number;
   declare model: string;
-  declare national_code: string; // foreign key to User
+  declare national_code: ForeignKey<User['national_code']>; // foreign key to User
   declare city: string;
 }
 
@@ -22,6 +23,10 @@ Tractor.init(
     national_code: {
       type: DataTypes.STRING(10),
       allowNull: false,
+      references: {
+        model: 'users',
+        key: 'national_code'
+      }
     },
     city: {
       type: DataTypes.STRING(20),

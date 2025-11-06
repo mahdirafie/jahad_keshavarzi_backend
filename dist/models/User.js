@@ -1,7 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from "../db/Sequelize.js";
 export class User extends Model {
-    static associations;
 }
 User.init({
     national_code: {

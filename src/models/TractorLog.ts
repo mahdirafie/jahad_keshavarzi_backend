@@ -1,9 +1,10 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
 import sequelize from '../db/Sequelize.js';
+import { Tractor } from './Tractor.js';
 
 export class TractorLog extends Model {
   declare id: number;
-  declare tractor_id: number;
+  declare tractor_id: ForeignKey<Tractor['id']>;
   declare sent_at: Date;
   declare latitude: number;
   declare longitude: number;
@@ -28,6 +29,10 @@ TractorLog.init(
     tractor_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
+      references: {
+        model: 'tractors',
+        key: 'id'
+      }
     },
     sent_at: {
       type: DataTypes.DATE,

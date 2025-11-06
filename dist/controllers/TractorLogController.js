@@ -1,6 +1,5 @@
 import { TractorLog } from "../models/TractorLog.js";
 import { Tractor } from "../models/Tractor.js";
-import { Op } from "sequelize";
 export class TractorLogController {
     /**
      * Create a new tractor log (POST method only)
@@ -94,9 +93,9 @@ export class TractorLogController {
             const logs = await TractorLog.findAll({
                 where: {
                     tractor_id,
-                    sent_at: {
-                        [Op.gte]: twentyFourHoursAgo,
-                    },
+                    // sent_at: {
+                    //   [Op.gte]: twentyFourHoursAgo,
+                    // },
                 },
                 order: [["sent_at", "DESC"]],
             });

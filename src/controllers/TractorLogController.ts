@@ -32,7 +32,7 @@ export class TractorLogController {
         temp,
         retry_count,
         packet_day,
-        packet_hour
+        packet_hour,
       } = req.body;
 
       // Password check
@@ -70,24 +70,30 @@ export class TractorLogController {
           .send("RECEIVED:\nInvalid JSON\nFAIL");
       }
 
-      // Convert sent_at (UNIX timestamp string) → Date
-      const sentAtDate = new Date(Number(sent_at) * 1000);
+      // Parse sent_at (ISO 8601 string) → Date
+      const sentAtDate = new Date(sent_at);
+      if (isNaN(sentAtDate.getTime())) {
+        return res
+          .status(400)
+          .type("text")
+          .send("RECEIVED:\nInvalid date\nFAIL");
+      }
 
-      // Create log
+      // Create log, parsing numeric fields on-the-fly
       await TractorLog.create({
         tractor_id,
         sent_at: sentAtDate,
-        latitude: lat,
-        longitude: lon,
-        distance,
-        in_fuel,
-        out_fuel,
-        rpm,
-        cell_signal,
-        temp,
-        retry_count,
+        latitude: parseFloat(lat),
+        longitude: parseFloat(lon),
+        distance: parseFloat(distance),
+        in_fuel: parseFloat(in_fuel),
+        out_fuel: parseFloat(out_fuel),
+        rpm: parseInt(rpm),
+        cell_signal: parseInt(cell_signal),
+        temp: parseFloat(temp),
+        retry_count: parseInt(retry_count),
         packet_day,
-        packet_hour
+        packet_hour,
       });
 
       return res.status(200).type("text").send("RECEIVED:\nSAVED\nSUCCESS");
@@ -114,7 +120,9 @@ export class TractorLogController {
       // Check if tractor exists
       const tractor = await Tractor.findByPk(tractor_id);
       if (!tractor) {
-        return res.status(404).json({ message: "No tractor found with this ID" });
+        return res
+          .status(404)
+          .json({ message: "No tractor found with this ID" });
       }
 
       // Calculate timestamp for 24 hours ago
@@ -125,9 +133,9 @@ export class TractorLogController {
       const logs = await TractorLog.findAll({
         where: {
           tractor_id,
-          sent_at: {
-            [Op.gte]: twentyFourHoursAgo,
-          },
+          // sent_at: {
+          //   [Op.gte]: twentyFourHoursAgo,
+          // },
         },
         order: [["sent_at", "DESC"]],
       });

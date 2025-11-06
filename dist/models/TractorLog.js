@@ -11,6 +11,10 @@ TractorLog.init({
     tractor_id: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+        references: {
+            model: 'tractors',
+            key: 'id'
+        }
     },
     sent_at: {
         type: DataTypes.DATE,
