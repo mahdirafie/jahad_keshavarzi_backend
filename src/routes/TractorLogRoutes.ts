@@ -97,44 +97,38 @@ router.post('/create', TractorLogController.createTractorLog);
 /**
  * @swagger
  * /tractor_log/get_all:
- *   post:
- *     summary: Get all logs for a specific tractor
- *     tags: [TractorLog]
+ *   get:
+ *     summary: دریافت لاگ‌های تراکتور در بازه زمانی مشخص
+ *     description: بازگرداندن اطلاعات لاگ‌ها برای تراکتور مشخص در بازه‌های زمانی روز، هفته، ماه یا سال
+ *     tags:
+ *       - Tractor Logs
+ *     parameters:
+ *       - in: query
+ *         name: time_range
+ *         schema:
+ *           type: string
+ *           enum: [day, week, month, year]
+ *         required: false
+ *         description: بازه زمانی مورد نظر 
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - tractor_id
  *             properties:
  *               tractor_id:
  *                 type: integer
- *                 example: 1
+ *                 example: 10
  *     responses:
  *       200:
- *         description: Logs retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Logs found successfully
- *                 tractor:
- *                   type: object
- *                 logs:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/TractorLog'
+ *         description: موفقیت‌آمیز
  *       400:
- *         description: Missing or invalid request body
+ *         description: پارامترها ناقص هستند
  *       404:
- *         description: Tractor or logs not found
+ *         description: تراکتور یافت نشد
  *       500:
- *         description: Internal server error
+ *         description: خطای داخلی سرور
  */
 router.post("/get_all", TractorLogController.getAllLogsForTractor);
 

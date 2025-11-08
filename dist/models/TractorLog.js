@@ -69,6 +69,5 @@ TractorLog.init({
     sequelize,
     tableName: 'tractor_logs',
     timestamps: true,
-    createdAt: false
 });
 //# sourceMappingURL=TractorLog.js.map

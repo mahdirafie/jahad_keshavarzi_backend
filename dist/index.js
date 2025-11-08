@@ -9,6 +9,7 @@ import UserRoutes from "./routes/UserRoutes.js";
 import TractorRoutes from "./routes/TractorRoutes.js";
 import { setupSwagger } from './swagger.js';
 import cors from "cors";
+import { FakeDataGenerator } from './data_generator/FakeDataGenerator.js';
 const app = express();
 const port = 4000;
 app.use(cors());
@@ -23,6 +24,51 @@ Tractor.belongsTo(User, { foreignKey: 'national_code', as: "owner" });
 // Tractor -> TractorLog
 Tractor.hasMany(TractorLog, { foreignKey: 'tractor_id' });
 TractorLog.belongsTo(Tractor, { foreignKey: 'tractor_id' });
+// -------------------------
+// Development Route to Generate Fake Data
+// -------------------------
+app.post('/dev/generate_fake_data', async (req, res) => {
+    try {
+        const { tractor_id, days = 365 } = req.body;
+        if (!tractor_id) {
+            return res.status(400).json({ error: 'tractorId is required' });
+        }
+        // Check if tractor exists
+        const tractor = await Tractor.findByPk(tractor_id);
+        if (!tractor) {
+            return res.status(404).json({ error: 'Tractor not found' });
+        }
+        console.log(`Generating fake data for tractor ${tractor_id}...`);
+        const count = await FakeDataGenerator.generateTractorLogs(tractor_id, days);
+        res.json({
+            message: `Successfully generated ${count} logs for tractor ${tractor_id}`,
+            tractor_id,
+            days,
+            logCount: count
+        });
+    }
+    catch (error) {
+        console.error('Error generating fake data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+// Clear fake data route (optional)
+app.delete('/dev/clear-fake-data/:tractor_id', async (req, res) => {
+    try {
+        const { tractor_id } = req.params;
+        const deletedCount = await TractorLog.destroy({
+            where: { tractor_id: tractor_id }
+        });
+        res.json({
+            message: `Cleared ${deletedCount} logs for tractor ${tractor_id}`,
+            deletedCount
+        });
+    }
+    catch (error) {
+        console.error('Error clearing fake data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 // -------------------------
 // Routes
 // -------------------------
@@ -40,7 +86,7 @@ app.get('/', (req, res) => {
         await sequelize.authenticate();
         console.log('✅ Database connected!');
         // Sync all models
-        await sequelize.sync({ alter: true }); // use { force: true } to drop & recreate tables
+        await sequelize.sync(); // use { force: true } to drop & recreate tables
         console.log('✅ Models synced!');
         // Optional: create a test user
         // await User.create({ national_code: '1234567890', name: 'Ali', phone: '09123456789' });
