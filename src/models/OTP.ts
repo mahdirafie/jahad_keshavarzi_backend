@@ -1,12 +1,15 @@
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../db/Sequelize.js';
+import { DataTypes, ForeignKey, Model } from 'sequelize';
+import sequelize from '../config/Sequelize.js';
+import { User } from './User.js';
+import { OTPStatus } from '../types/OTPStatus.js';
 
 export class OTP extends Model {
   declare id: number;
   declare created_at: Date;
-  declare status: 'verified' | 'not-verified';
+  declare status: OTPStatus;
   declare code: string;
   declare efforts_remained: number;
+  declare phone: string;
 }
 
 OTP.init(
@@ -22,12 +25,12 @@ OTP.init(
       defaultValue: DataTypes.NOW,
     },
     status: {
-      type: DataTypes.ENUM('verified', 'not-verified'),
+      type: DataTypes.ENUM(...Object.values(OTPStatus)),
       allowNull: false,
-      defaultValue: 'not-verified',
+      defaultValue: OTPStatus.NOT_VERIFIED,
     },
     code: {
-      type: DataTypes.STRING(6),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     efforts_remained: {
@@ -35,6 +38,11 @@ OTP.init(
       allowNull: false,
       defaultValue: 3,
     },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    }
   },
   {
     sequelize,

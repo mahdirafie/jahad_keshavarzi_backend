@@ -10,7 +10,9 @@ export class TractorController {
    */
   static async createTractor(req: Request, res: Response) {
     try {
-      const { model, national_code } = req.body;
+      const { model, city } = req.body;
+
+      const national_code = (req as any).user?.national_code;
 
       if (!model || !national_code) {
         return res
@@ -18,7 +20,7 @@ export class TractorController {
           .json({ message: "Model and national_code are required" });
       }
 
-      const newTractor = await Tractor.create({ model, national_code });
+      const newTractor = await Tractor.create({ model, national_code, city });
 
       res.status(201).json(newTractor);
     } catch (error) {
@@ -29,39 +31,39 @@ export class TractorController {
 
   static async getAllTractorsForUser(req: Request, res: Response) {
     try {
-      const { national_code } = req.body;
-
+      const national_code = (req as any).user?.national_code;
+  
       if (!national_code) {
-        return res.status(400).json({ message: "کد ملی الزامی است!" });
+        return res.status(401).json({ message: "Unauthorized: No user info" });
       }
-
+  
       const user = await User.findOne({
         where: { national_code },
-        include: [{model: Tractor, as: "tractors"}],
+        include: [{ model: Tractor, as: "tractors" }],
       });
-
+  
       if (!user) {
         return res.status(404).json({ message: "کاربر یافت نشد!" });
       }
-
+  
       const tractors = await user.getTractors();
-
+  
       if (!tractors || tractors.length === 0) {
         return res.status(200).json({
           message: "هیچ تراکتوری برای این کاربر پیدا نشد!",
           tractors: [],
         });
       }
-
+  
       return res.status(200).json({
         message: "با موفقیت دریافت شد",
-        tractors
+        tractors,
       });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal Server ERR" });
     }
-  }
+  }  
 
   static async getAllTractorsInfo(req: Request, res: Response) {
     try {

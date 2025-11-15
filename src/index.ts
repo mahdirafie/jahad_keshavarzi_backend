@@ -2,20 +2,21 @@ import express from 'express';
 import type { Request, Response } from 'express';
 
 // Import Sequelize instance and models (use .js for ESM)
-import sequelize from './db/Sequelize.js';
+import sequelize from './config/Sequelize.js';
 import { User } from './models/User.js';
 import { Tractor } from './models/Tractor.js';
 import { TractorLog } from './models/TractorLog.js';
-import { OTP } from './models/OTP.js';
 
 import TractorLogRoutes from "./routes/TractorLogRoutes.js";
 import UserRoutes from "./routes/UserRoutes.js";
 import TractorRoutes from "./routes/TractorRoutes.js";
+import OTPRoutes from "./routes/OTPRoutes.js";
 
 import { setupSwagger } from './swagger.js';
 
 import cors from "cors";
 import { FakeDataGenerator } from './data_generator/FakeDataGenerator.js';
+import { UserController } from './controllers/UserController.js';
 
 const app = express();
 const port = 4000;
@@ -98,6 +99,7 @@ app.delete('/dev/clear-fake-data/:tractor_id', async (req: Request, res: Respons
 app.use('/tractor_log', TractorLogRoutes);
 app.use('/user', UserRoutes);
 app.use('/tractor', TractorRoutes);
+app.use('/otp', OTPRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript + Node.js backend with Sequelize!');

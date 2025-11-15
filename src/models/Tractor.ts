@@ -1,5 +1,5 @@
 import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../db/Sequelize.js';
+import sequelize from '../config/Sequelize.js';
 import { User } from './User.js';
 
 export class Tractor extends Model {

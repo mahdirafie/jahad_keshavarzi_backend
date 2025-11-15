@@ -1,5 +1,5 @@
 import { Association, DataTypes, Model, HasManyGetAssociationsMixin } from 'sequelize';
-import sequelize from "../db/Sequelize.js"
+import sequelize from "../config/Sequelize.js"
 import { Tractor } from './Tractor.js';
 
 export class User extends Model {

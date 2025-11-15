@@ -1,5 +1,6 @@
-import { Router } from 'express';
-import { TractorController } from '../controllers/TractorController.js';
+import { Router } from "express";
+import { TractorController } from "../controllers/TractorController.js";
+import { is_auth } from "../middlewares/is_auth.js";
 
 const router = Router();
 
@@ -16,9 +17,9 @@ const router = Router();
  *         model:
  *           type: string
  *           example: "John Deere 5075E"
- *         national_code:
+ *         city:
  *           type: string
- *           example: "1234567890"
+ *           example: "اراک"
  */
 
 /**
@@ -41,7 +42,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/create', TractorController.createTractor);
+router.post("/create", is_auth, TractorController.createTractor);
 
 /**
  * @swagger
@@ -57,9 +58,6 @@ router.post('/create', TractorController.createTractor);
  *           schema:
  *             type: object
  *             properties:
- *               national_code:
- *                 type: string
- *                 example: "1234567890"
  *     responses:
  *       200:
  *         description: لیست تراکتورها با موفقیت بازگردانده شد.
@@ -81,7 +79,7 @@ router.post('/create', TractorController.createTractor);
  *       500:
  *         description: خطای داخلی سرور.
  */
-router.post("/by_user", TractorController.getAllTractorsForUser);
+router.get("/by_user", is_auth, TractorController.getAllTractorsForUser);
 
 /**
  * @swagger

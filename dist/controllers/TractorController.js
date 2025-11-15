@@ -8,13 +8,14 @@ export class TractorController {
      */
     static async createTractor(req, res) {
         try {
-            const { model, national_code } = req.body;
+            const { model, city } = req.body;
+            const national_code = req.user?.national_code;
             if (!model || !national_code) {
                 return res
                     .status(400)
                     .json({ message: "Model and national_code are required" });
             }
-            const newTractor = await Tractor.create({ model, national_code });
+            const newTractor = await Tractor.create({ model, national_code, city });
             res.status(201).json(newTractor);
         }
         catch (error) {
@@ -24,9 +25,9 @@ export class TractorController {
     }
     static async getAllTractorsForUser(req, res) {
         try {
-            const { national_code } = req.body;
+            const national_code = req.user?.national_code;
             if (!national_code) {
-                return res.status(400).json({ message: "کد ملی الزامی است!" });
+                return res.status(401).json({ message: "Unauthorized: No user info" });
             }
             const user = await User.findOne({
                 where: { national_code },
@@ -44,7 +45,7 @@ export class TractorController {
             }
             return res.status(200).json({
                 message: "با موفقیت دریافت شد",
-                tractors
+                tractors,
             });
         }
         catch (error) {
