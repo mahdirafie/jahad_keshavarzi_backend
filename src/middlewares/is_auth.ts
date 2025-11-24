@@ -14,7 +14,6 @@ export const is_auth = (req: AuthRequest, res: Response, next: NextFunction) => 
     }
 
     const token = authHeader.split(" ")[1];
-    console.log(token);
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "jahad_secret"
@@ -26,6 +25,6 @@ export const is_auth = (req: AuthRequest, res: Response, next: NextFunction) => 
     next();
   } catch (error) {
     console.error("Auth error:", error);
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ message: "توکن شما منسوخ شده. لطفا دوباره وارد حساب خود شوید!" });
   }
 };

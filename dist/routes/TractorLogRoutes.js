@@ -96,7 +96,7 @@ router.post('/create', TractorLogController.createTractorLog);
  *     summary: دریافت لاگ‌های تراکتور در بازه زمانی مشخص
  *     description: بازگرداندن اطلاعات لاگ‌ها برای تراکتور مشخص در بازه‌های زمانی روز، هفته، ماه یا سال
  *     tags:
- *       - Tractor Logs
+ *       - TractorLog
  *     parameters:
  *       - in: query
  *         name: time_range

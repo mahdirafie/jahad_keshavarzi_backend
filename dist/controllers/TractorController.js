@@ -8,14 +8,23 @@ export class TractorController {
      */
     static async createTractor(req, res) {
         try {
-            const { model, city } = req.body;
+            const { model, production_year, power, cylinder_no } = req.body;
             const national_code = req.user?.national_code;
-            if (!model || !national_code) {
+            if (!!national_code) {
+                return res.status(400).json({ message: "کد ملی الزامی است!" });
+            }
+            if (!model || !production_year) {
                 return res
                     .status(400)
-                    .json({ message: "Model and national_code are required" });
+                    .json({ message: "نوع تراکتور و سال تولید الزامی هستند!" });
             }
-            const newTractor = await Tractor.create({ model, national_code, city });
+            const newTractor = await Tractor.create({
+                model,
+                national_code,
+                production_year,
+                power: power ?? null,
+                cylinder_no: cylinder_no ?? null,
+            });
             res.status(201).json(newTractor);
         }
         catch (error) {
@@ -55,19 +64,20 @@ export class TractorController {
     }
     static async getAllTractorsInfo(req, res) {
         try {
-            // Fetch all tractors
-            const tractors = await Tractor.findAll();
-            // Count tractors per city in Markazi province
-            // Assuming all cities in your DB belong to Markazi province
+            // Fetch tractors along with their owners
+            const tractors = await Tractor.findAll({
+                include: [
+                    {
+                        model: User,
+                        as: 'owner',
+                        attributes: ["city", "national_code"],
+                    },
+                ],
+            });
             const cityCounts = {};
             tractors.forEach((tractor) => {
-                const city = tractor.city || "اراک"; // default if null
-                if (cityCounts[city]) {
-                    cityCounts[city]++;
-                }
-                else {
-                    cityCounts[city] = 1;
-                }
+                const ownerCity = tractor.owner?.city || "اراک"; // default if no city
+                cityCounts[ownerCity] = (cityCounts[ownerCity] || 0) + 1;
             });
             return res.status(200).json({
                 tractors,

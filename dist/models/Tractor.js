@@ -1,5 +1,5 @@
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/Sequelize.js';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../config/Sequelize.js";
 export class Tractor extends Model {
 }
 Tractor.init({
@@ -16,18 +16,21 @@ Tractor.init({
         type: DataTypes.STRING(10),
         allowNull: false,
         references: {
-            model: 'users',
-            key: 'national_code'
-        }
+            model: "users",
+            key: "national_code",
+        },
     },
-    city: {
-        type: DataTypes.STRING(20),
+    power: {
+        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
-        defaultValue: "اراک"
-    }
+    },
+    cylinder_no: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true,
+    },
 }, {
     sequelize,
-    tableName: 'tractors',
+    tableName: "tractors",
     timestamps: true,
 });
 //# sourceMappingURL=Tractor.js.map

@@ -20,10 +20,30 @@ User.init({
     password: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    postal_code: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    landline_phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    address: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    province: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    city: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     sequelize,
     tableName: 'users',
-    timestamps: true, // adds createdAt and updatedAt
+    timestamps: true,
 });
 //# sourceMappingURL=User.js.map

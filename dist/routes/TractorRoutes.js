@@ -4,40 +4,62 @@ import { is_auth } from "../middlewares/is_auth.js";
 const router = Router();
 /**
  * @swagger
- * components:
- *   schemas:
- *     Tractor:
- *       type: object
- *       required:
- *         - model
- *         - national_code
- *       properties:
- *         model:
- *           type: string
- *           example: "John Deere 5075E"
- *         city:
- *           type: string
- *           example: "اراک"
- */
-/**
- * @swagger
- * /tractor/create:
+ * /tractors:
  *   post:
  *     summary: Create a new tractor
- *     tags: [Tractor]
+ *     description: Creates a tractor record for the authenticated user. `model` and `production_year` are required fields; `power` and `cylinder_no` are optional.
+ *     tags:
+ *       - Tractor
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Tractor'
+ *             type: object
+ *             properties:
+ *               model:
+ *                 type: string
+ *                 example: MF 285
+ *               production_year:
+ *                 type: integer
+ *                 example: 2020
+ *               power:
+ *                 type: integer
+ *                 nullable: true
+ *                 example: 75
+ *               cylinder_no:
+ *                 type: integer
+ *                 nullable: true
+ *                 example: 4
  *     responses:
  *       201:
  *         description: Tractor created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Tractor'
  *       400:
- *         description: Missing required fields
+ *         description: Bad Request – Missing required fields or national code
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "نوع تراکتور و سال تولید الزامی هستند!"
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
  */
 router.post("/create", is_auth, TractorController.createTractor);
 /**

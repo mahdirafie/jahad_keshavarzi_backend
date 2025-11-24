@@ -44,27 +44,33 @@ export class UserController {
       const { national_code, password } = req.body;
 
       if (!national_code || !password) {
-        return res.status(400).json({ message: "کد ملی و رمز عبور ضروری هستند!" });
+        return res
+          .status(400)
+          .json({ message: "کد ملی و رمز عبور ضروری هستند!" });
       }
 
       // Find user
       const user = await User.findOne({ where: { national_code } });
 
       if (!user) {
-        return res.status(404).json({ message: "کاربر پیدا نشد! لطفا ثبت نام کنید." });
+        return res
+          .status(404)
+          .json({ message: "کاربر پیدا نشد! لطفا ثبت نام کنید." });
       }
 
       // Compare passwords
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(401).json({ message: "اطلاعات وارد شده صحیح نمیباشد!" });
+        return res
+          .status(401)
+          .json({ message: "اطلاعات وارد شده صحیح نمیباشد!" });
       }
 
       // Generate token (valid for 7 days)
       const token = jwt.sign(
-        { national_code: user.national_code }, 
+        { national_code: user.national_code },
         process.env.JWT_SECRET || "jahad_secret",
-        { expiresIn: "7d" }
+        { expiresIn: "1YEAR" }
       );
 
       // Remove password from response
@@ -80,4 +86,93 @@ export class UserController {
       return res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  static async getProfile(req: Request, res: Response) {
+    try {
+      const national_code = (req as any).user?.national_code;
+  
+      if (!national_code) {
+        return res.status(400).json({ message: "کد ملی الزامی است!" });
+      }
+  
+      const user = await User.findByPk(national_code);
+      if (!user) {
+        return res.status(404).json({ message: "کاربر مورد نظر پیدا نشد!" });
+      }
+  
+      // Convert Sequelize model to plain object
+      const userData = { ...user.get() };
+  
+      // Remove password
+      delete userData.password;
+  
+      // Remove null/undefined fields
+      Object.keys(userData).forEach(
+        (key) => userData[key] == null && delete userData[key]
+      );
+  
+      return res.status(200).json({
+        message: "کاربر با موفقیت پیدا شد!",
+        user: userData,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error!" });
+    }
+  }
+  
+
+  static async completeProfile(req: Request, res: Response) {
+    try {
+      const national_code = (req as any).user?.national_code;
+  
+      if (!national_code) {
+        return res.status(400).json({ message: "کد ملی الزامی است!" });
+      }
+  
+      const {
+        postal_code,
+        landline_phone,
+        address,
+        province,
+        city
+      } = req.body;
+  
+      // province & city must exist based on your model
+      if (!province || !city || !address || !postal_code || !landline_phone) {
+        return res.status(400).json({ message: "تمامی فیلد ها مورد نیاز هستند!" });
+      }
+  
+      const user = await User.findByPk(national_code);
+      if (!user) {
+        return res.status(404).json({ message: "کاربر مورد نظر پیدا نشد!" });
+      }
+  
+      await user.update({
+        postal_code,
+        landline_phone,
+        address,
+        province,
+        city
+      });
+  
+      return res.status(200).json({
+        message: "پروفایل با موفقیت تکمیل شد!",
+        user: {
+          national_code: user.national_code,
+          name: user.name,
+          phone: user.phone,
+          postal_code: user.postal_code,
+          landline_phone: user.landline_phone,
+          address: user.address,
+          province: user.province,
+          city: user.city
+        }
+      });
+  
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error!" });
+    }
+  }  
 }

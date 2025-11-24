@@ -6,11 +6,13 @@ import sequelize from './config/Sequelize.js';
 import { User } from './models/User.js';
 import { Tractor } from './models/Tractor.js';
 import { TractorLog } from './models/TractorLog.js';
+import { Product } from "./models/Product.js";
 
 import TractorLogRoutes from "./routes/TractorLogRoutes.js";
 import UserRoutes from "./routes/UserRoutes.js";
 import TractorRoutes from "./routes/TractorRoutes.js";
 import OTPRoutes from "./routes/OTPRoutes.js";
+import ProductRoutes from "./routes/ProductRoutes.js";
 
 import { setupSwagger } from './swagger.js';
 
@@ -100,6 +102,7 @@ app.use('/tractor_log', TractorLogRoutes);
 app.use('/user', UserRoutes);
 app.use('/tractor', TractorRoutes);
 app.use('/otp', OTPRoutes);
+app.use('/product', ProductRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript + Node.js backend with Sequelize!');

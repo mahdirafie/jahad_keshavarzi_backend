@@ -1,12 +1,15 @@
-import { DataTypes, ForeignKey, Model } from 'sequelize';
-import sequelize from '../config/Sequelize.js';
-import { User } from './User.js';
+import { DataTypes, ForeignKey, Model } from "sequelize";
+import sequelize from "../config/Sequelize.js";
+import { User } from "./User.js";
 
 export class Tractor extends Model {
   declare id: number;
   declare model: string;
-  declare national_code: ForeignKey<User['national_code']>; // foreign key to User
-  declare city: string;
+  declare national_code: ForeignKey<User["national_code"]>;
+  declare power: number | null;
+  declare cylinder_no: number | null;
+
+  declare owner?: User;
 }
 
 Tractor.init(
@@ -24,19 +27,22 @@ Tractor.init(
       type: DataTypes.STRING(10),
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'national_code'
-      }
+        model: "users",
+        key: "national_code",
+      },
     },
-    city: {
-      type: DataTypes.STRING(20),
+    power: {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
-      defaultValue: "اراک"
-    }
+    },
+    cylinder_no: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+    },
   },
   {
     sequelize,
-    tableName: 'tractors',
+    tableName: "tractors",
     timestamps: true,
   }
 );

@@ -7,6 +7,14 @@ export class User extends Model {
   declare name: string;
   declare phone: string;
   declare password: string;
+  declare postal_code: string | null;
+  declare landline_phone: string | null;
+  declare address: string | null;
+  declare province: string | null;
+  declare city: string | null;
+
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
 
   // association mixin methods
   declare getTractors: HasManyGetAssociationsMixin<Tractor>;
@@ -31,11 +39,31 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    postal_code: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    landline_phone: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    province: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   },
   {
     sequelize,
     tableName: 'users',
-    timestamps: true, // adds createdAt and updatedAt
+    timestamps: true,
   }
 );
