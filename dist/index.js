@@ -9,6 +9,7 @@ import UserRoutes from "./routes/UserRoutes.js";
 import TractorRoutes from "./routes/TractorRoutes.js";
 import OTPRoutes from "./routes/OTPRoutes.js";
 import ProductRoutes from "./routes/ProductRoutes.js";
+import PaymentRoutes from "./routes/PaymentRoutes.js";
 import { setupSwagger } from './swagger.js';
 import cors from "cors";
 import { FakeDataGenerator } from './data_generator/FakeDataGenerator.js';
@@ -79,6 +80,7 @@ app.use('/user', UserRoutes);
 app.use('/tractor', TractorRoutes);
 app.use('/otp', OTPRoutes);
 app.use('/product', ProductRoutes);
+app.use('/payment', PaymentRoutes);
 app.get('/', (req, res) => {
     res.send('Hello, TypeScript + Node.js backend with Sequelize!');
 });

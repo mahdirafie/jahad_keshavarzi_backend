@@ -13,6 +13,7 @@ import UserRoutes from "./routes/UserRoutes.js";
 import TractorRoutes from "./routes/TractorRoutes.js";
 import OTPRoutes from "./routes/OTPRoutes.js";
 import ProductRoutes from "./routes/ProductRoutes.js";
+import PaymentRoutes from "./routes/PaymentRoutes.js";
 
 import { setupSwagger } from './swagger.js';
 
@@ -103,6 +104,7 @@ app.use('/user', UserRoutes);
 app.use('/tractor', TractorRoutes);
 app.use('/otp', OTPRoutes);
 app.use('/product', ProductRoutes);
+app.use('/payment', PaymentRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript + Node.js backend with Sequelize!');
@@ -118,7 +120,7 @@ app.get('/', (req: Request, res: Response) => {
     console.log('✅ Database connected!');
 
     // Sync all models
-    await sequelize.sync(); // use { force: true } to drop & recreate tables
+    await sequelize.sync({force: true}); // use { force: true } to drop & recreate tables
     console.log('✅ Models synced!');
 
     // Optional: create a test user
