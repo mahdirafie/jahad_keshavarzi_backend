@@ -6,7 +6,7 @@ const router = Router();
 
 /**
  * @swagger
- * /tractors:
+ * /tractor/create:
  *   post:
  *     summary: Create a new tractor
  *     description: Creates a tractor record for the authenticated user. `model` and `production_year` are required fields; `power` and `cylinder_no` are optional.
@@ -25,7 +25,7 @@ const router = Router();
  *                 type: string
  *                 example: MF 285
  *               production_year:
- *                 type: integer
+ *                 type: string
  *                 example: 2020
  *               power:
  *                 type: integer
@@ -68,7 +68,7 @@ router.post("/create", is_auth, TractorController.createTractor);
 /**
  * @swagger
  * /tractor/by_user:
- *   post:
+ *   get:
  *     summary: دریافت تراکتورهای یک کاربر با استفاده از کد ملی
  *     description: این متد تمام تراکتورهای متعلق به یک کاربر خاص را با استفاده از کد ملی برمی‌گرداند.
  *     tags: [Tractor]
@@ -129,5 +129,65 @@ router.get("/by_user", is_auth, TractorController.getAllTractorsForUser);
  *         description: خطای داخلی سرور
  */
 router.get("/info_all", TractorController.getAllTractorsInfo);
+
+/**
+ * @swagger
+ * /tractor/delete/{id}:
+ *   delete:
+ *     summary: Delete a tractor by ID
+ *     description: Deletes a tractor using its numeric ID. Returns an error if the ID is invalid or the tractor does not exist.
+ *     tags:
+ *       - Tractor
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Numeric ID of the tractor to delete
+ *         schema:
+ *           type: integer
+ *           example: 5
+ *     responses:
+ *       200:
+ *         description: Tractor successfully deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "تراکتور مورد نظر با موفقیت حذف شد!"
+ *       400:
+ *         description: Invalid tractor ID (not a number)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid tractor ID"
+ *       404:
+ *         description: Tractor not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "تراکتور مورد نظر یافت نشد!"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.delete('/delete/:id', is_auth, TractorController.deleteTractorById);
 
 export default router;

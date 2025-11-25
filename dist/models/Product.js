@@ -13,7 +13,7 @@ Product.init({
         allowNull: false
     },
     price: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         defaultValue: 0
     }

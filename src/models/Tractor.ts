@@ -8,6 +8,7 @@ export class Tractor extends Model {
   declare national_code: ForeignKey<User["national_code"]>;
   declare power: number | null;
   declare cylinder_no: number | null;
+  declare product_year: string;
 
   declare owner?: User;
 }
@@ -30,6 +31,7 @@ Tractor.init(
         model: "users",
         key: "national_code",
       },
+      onDelete: 'CASCADE'
     },
     power: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -39,6 +41,10 @@ Tractor.init(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
     },
+    production_year: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   },
   {
     sequelize,

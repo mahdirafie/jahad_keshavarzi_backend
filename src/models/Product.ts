@@ -4,7 +4,7 @@ import sequelize from "../config/Sequelize.js";
 export class Product extends Model {
     declare id: number;
     declare name: string;
-    declare price: bigint;
+    declare price: number;
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
@@ -21,7 +21,7 @@ Product.init({
         allowNull: false
     },
     price: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         defaultValue: 0
     }

@@ -19,6 +19,7 @@ Tractor.init({
             model: "users",
             key: "national_code",
         },
+        onDelete: 'CASCADE'
     },
     power: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -28,6 +29,10 @@ Tractor.init({
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
     },
+    production_year: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
 }, {
     sequelize,
     tableName: "tractors",

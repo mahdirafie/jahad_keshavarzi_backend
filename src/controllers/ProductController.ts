@@ -13,14 +13,14 @@ export default class ProductController {
 
       const product = await Product.create({
         name,
-        price: BigInt(price) // convert to BigInt if coming as string/number
+        price: Number(price) // convert to BigInt if coming as string/number
       });
 
       return res.status(201).json({
         message: "محصول با موفقیت ایجاد شد!",
         product: {
           ...product.toJSON(),
-          price: product.price.toString() // convert BigInt to string
+          price: product.price.toString() // convert number to string
         }
       });
     } catch (error) {
@@ -62,7 +62,7 @@ export default class ProductController {
         return res.status(404).json({ message: "محصول مورد نظر پیدا نشد!" });
       }
 
-      product.price = BigInt(price);
+      product.price = Number(price);
       await product.save();
 
       return res.status(200).json({

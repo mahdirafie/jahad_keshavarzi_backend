@@ -1,5 +1,7 @@
 import { Tractor } from "../models/Tractor.js";
 import { User } from "../models/User.js";
+import { ensureProfileComplete } from "../services/ensureUserProfileComplete.js";
+import { Product } from "../models/Product.js";
 export class TractorController {
     /**
      * Create a new tractor
@@ -10,8 +12,18 @@ export class TractorController {
         try {
             const { model, production_year, power, cylinder_no } = req.body;
             const national_code = req.user?.national_code;
-            if (!!national_code) {
+            if (!national_code) {
                 return res.status(400).json({ message: "کد ملی الزامی است!" });
+            }
+            const user = await User.findByPk(national_code);
+            if (!user) {
+                return res.status(400).json({ message: 'کاربر یافت نشد!' });
+            }
+            try {
+                ensureProfileComplete(user);
+            }
+            catch (err) {
+                return res.status(400).json({ message: err.message });
             }
             if (!model || !production_year) {
                 return res
@@ -45,6 +57,12 @@ export class TractorController {
             if (!user) {
                 return res.status(404).json({ message: "کاربر یافت نشد!" });
             }
+            try {
+                ensureProfileComplete(user);
+            }
+            catch (err) {
+                return res.status(400).json({ message: err.message });
+            }
             const tractors = await user.getTractors();
             if (!tractors || tractors.length === 0) {
                 return res.status(200).json({
@@ -52,10 +70,20 @@ export class TractorController {
                     tractors: [],
                 });
             }
-            return res.status(200).json({
+            const product = await Product.findAll({ attributes: ['price'] });
+            let price = null;
+            if (product.length === 0 || !product) {
+                price = null;
+            }
+            price = product[0].price;
+            const responseData = {
                 message: "با موفقیت دریافت شد",
                 tractors,
-            });
+            };
+            if (price !== null) {
+                responseData.price = price; // Only added if not null
+            }
+            return res.status(200).json(responseData);
         }
         catch (error) {
             console.error(error);
@@ -69,7 +97,7 @@ export class TractorController {
                 include: [
                     {
                         model: User,
-                        as: 'owner',
+                        as: "owner",
                         attributes: ["city", "national_code"],
                     },
                 ],
@@ -87,6 +115,27 @@ export class TractorController {
         catch (error) {
             console.error(error);
             return res.status(500).json({ message: "Internal Server ERR" });
+        }
+    }
+    // delete a tractor by ID
+    static async deleteTractorById(req, res) {
+        try {
+            const id = Number(req.params.id);
+            if (isNaN(id)) {
+                return res.status(400).json({ message: "Invalid tractor ID" });
+            }
+            const tractor = await Tractor.findByPk(id);
+            if (!tractor) {
+                return res.status(404).json({ message: "تراکتور مورد نظر یافت نشد!" });
+            }
+            await tractor.destroy();
+            return res
+                .status(200)
+                .json({ message: "تراکتور مورد نظر با موفقیت حذف شد!" });
+        }
+        catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Internal server error" });
         }
     }
 }

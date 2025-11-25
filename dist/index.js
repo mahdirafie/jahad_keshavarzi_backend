@@ -90,7 +90,7 @@ app.get('/', (req, res) => {
         await sequelize.authenticate();
         console.log('✅ Database connected!');
         // Sync all models
-        await sequelize.sync(); // use { force: true } to drop & recreate tables
+        await sequelize.sync({ force: true }); // use { force: true } to drop & recreate tables
         console.log('✅ Models synced!');
         // Optional: create a test user
         // await User.create({ national_code: '1234567890', name: 'Ali', phone: '09123456789' });
