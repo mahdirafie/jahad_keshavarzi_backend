@@ -90,27 +90,27 @@ export class UserController {
   static async getProfile(req: Request, res: Response) {
     try {
       const national_code = (req as any).user?.national_code;
-  
+
       if (!national_code) {
         return res.status(400).json({ message: "کد ملی الزامی است!" });
       }
-  
+
       const user = await User.findByPk(national_code);
       if (!user) {
         return res.status(404).json({ message: "کاربر مورد نظر پیدا نشد!" });
       }
-  
+
       // Convert Sequelize model to plain object
       const userData = { ...user.get() };
-  
+
       // Remove password
       delete userData.password;
-  
+
       // Remove null/undefined fields
       Object.keys(userData).forEach(
         (key) => userData[key] == null && delete userData[key]
       );
-  
+
       return res.status(200).json({
         message: "کاربر با موفقیت پیدا شد!",
         user: userData,
@@ -120,59 +120,65 @@ export class UserController {
       return res.status(500).json({ message: "Internal server error!" });
     }
   }
-  
 
   static async completeProfile(req: Request, res: Response) {
     try {
       const national_code = (req as any).user?.national_code;
-  
+
       if (!national_code) {
         return res.status(400).json({ message: "کد ملی الزامی است!" });
       }
-  
-      const {
-        postal_code,
-        landline_phone,
-        address,
-        province,
-        city
-      } = req.body;
-  
-      // province & city must exist based on your model
-      if (!province || !city || !address || !postal_code || !landline_phone) {
-        return res.status(400).json({ message: "تمامی فیلد ها مورد نیاز هستند!" });
+
+      const { father_name, village, birth_date, ownership_type, profile_image, address, province, city } = req.body;
+
+      if (!province || !city || !address) {
+        return res
+          .status(400)
+          .json({ message: "تمامی فیلد های آدرس مورد نیاز هستند!" });
       }
-  
+
       const user = await User.findByPk(national_code);
       if (!user) {
         return res.status(404).json({ message: "کاربر مورد نظر پیدا نشد!" });
       }
-  
+
       await user.update({
-        postal_code,
-        landline_phone,
+        father_name,
+        village,
+        birth_date,
+        ownership_type,
+        profile_image,
         address,
         province,
-        city
+        city,
       });
-  
+
+      const userData = { ...user.get() };
+      delete userData.password;
+      Object.keys(userData).forEach(
+        (key) => userData[key] == null && delete userData[key]
+      );
+
       return res.status(200).json({
         message: "پروفایل با موفقیت تکمیل شد!",
-        user: {
-          national_code: user.national_code,
-          name: user.name,
-          phone: user.phone,
-          postal_code: user.postal_code,
-          landline_phone: user.landline_phone,
-          address: user.address,
-          province: user.province,
-          city: user.city
-        }
+        user: userData,
       });
-  
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal server error!" });
     }
-  }  
+  }
+
+  static async getAllUsers(req: Request, res: Response) {
+    try {
+      console.log("HERRERE");
+      const users = await User.findAll();
+      return res
+        .status(200)
+        .json({ message: "کاربران با موفقیت دریافت شدند!", users });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "خطای داخلی سرور!" });
+    }
+  }
 }

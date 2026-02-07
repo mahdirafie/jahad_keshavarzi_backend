@@ -13,10 +13,12 @@ import PaymentRoutes from "./routes/PaymentRoutes.js";
 import { setupSwagger } from './swagger.js';
 import cors from "cors";
 import { FakeDataGenerator } from './data_generator/FakeDataGenerator.js';
+import path from 'path';
 const app = express();
 const port = 4000;
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 setupSwagger(app);
 // -------------------------
 // Define associations
@@ -92,10 +94,8 @@ app.get('/', (req, res) => {
         await sequelize.authenticate();
         console.log('✅ Database connected!');
         // Sync all models
-        await sequelize.sync({ force: true }); // use { force: true } to drop & recreate tables
+        await sequelize.sync({ force: false });
         console.log('✅ Models synced!');
-        // Optional: create a test user
-        // await User.create({ national_code: '1234567890', name: 'Ali', phone: '09123456789' });
     }
     catch (error) {
         console.error('❌ Unable to connect to the database:', error);

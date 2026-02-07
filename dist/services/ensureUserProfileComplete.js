@@ -1,8 +1,8 @@
 export function ensureProfileComplete(user) {
     // List of nullable fields that must be filled to consider the profile "complete"
     const requiredFields = [
-        "postal_code",
-        "landline_phone",
+        // "postal_code",
+        // "landline_phone",
         "address",
         "province",
         "city"

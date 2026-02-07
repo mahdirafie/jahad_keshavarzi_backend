@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('jahad_db', 'rafi', 'rafidb', {
+const sequelize = new Sequelize('jahad_kdb', 'rafi', 'rafidb', {
   host: 'localhost',
   dialect: 'mysql',
   logging: console.log,
@@ -9,5 +9,4 @@ const sequelize = new Sequelize('jahad_db', 'rafi', 'rafidb', {
     timezone: '+00:00',
   },
 });
-
 export default sequelize;

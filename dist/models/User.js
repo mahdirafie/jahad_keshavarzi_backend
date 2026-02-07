@@ -4,7 +4,7 @@ export class User extends Model {
 }
 User.init({
     national_code: {
-        type: DataTypes.STRING(10), // Iranian national code is 10 digits
+        type: DataTypes.STRING(10),
         primaryKey: true,
         allowNull: false,
     },
@@ -13,7 +13,7 @@ User.init({
         allowNull: false,
     },
     phone: {
-        type: DataTypes.STRING(11), // Iranian phone numbers are 11 digits
+        type: DataTypes.STRING(11),
         allowNull: false,
         unique: true,
     },
@@ -21,11 +21,23 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    postal_code: {
+    father_name: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: true
     },
-    landline_phone: {
+    village: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    birth_date: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    ownership_type: {
+        type: DataTypes.ENUM('personal', 'professional'),
+        allowNull: true
+    },
+    profile_image: {
         type: DataTypes.STRING,
         allowNull: true
     },

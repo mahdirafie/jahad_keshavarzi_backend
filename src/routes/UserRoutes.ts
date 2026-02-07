@@ -1,7 +1,8 @@
-import { Router } from 'express';
-import { UserController } from '../controllers/UserController.js';
-import { User } from '../models/User.js';
-import { is_auth } from '../middlewares/is_auth.js';
+import { Router } from "express";
+import { UserController } from "../controllers/UserController.js";
+import { User } from "../models/User.js";
+import { is_auth } from "../middlewares/is_auth.js";
+import { UploadController } from "../controllers/UploadController.js";
 
 const router = Router();
 
@@ -54,8 +55,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/create', UserController.createUser);
-
+router.post("/create", UserController.createUser);
 
 /**
  * @swagger
@@ -106,7 +106,7 @@ router.post('/create', UserController.createUser);
  *       500:
  *         description: Internal server error
  */
-router.post('/login', UserController.login);
+router.post("/login", UserController.login);
 
 /**
  * @swagger
@@ -169,7 +169,7 @@ router.post('/login', UserController.login);
  *                   type: string
  *                   example: "Internal server error!"
  */
-router.get('/get_profile', is_auth, UserController.getProfile);
+router.get("/get_profile", is_auth, UserController.getProfile);
 
 /**
  * @swagger
@@ -188,12 +188,23 @@ router.get('/get_profile', is_auth, UserController.getProfile);
  *           schema:
  *             type: object
  *             properties:
- *               postal_code:
+ *               father_name:
  *                 type: string
- *                 example: "1234567890"
- *               landline_phone:
+ *                 example: "حسن"
+ *               village:
  *                 type: string
- *                 example: "02144556677"
+ *                 example: "فرهادآباد"
+ *               birth_date:
+ *                 type: string
+ *                 format: date
+ *                 example: "1990-01-01"
+ *               ownership_type:
+ *                 type: string
+ *                 enum: [personal, professional]
+ *                 example: "personal"
+ *               profile_image:
+ *                 type: string
+ *                 example: "/uploads/profile.jpg"
  *               address:
  *                 type: string
  *                 example: "تهران، خیابان آزادی، پلاک ۱۲۳"
@@ -204,6 +215,7 @@ router.get('/get_profile', is_auth, UserController.getProfile);
  *                 type: string
  *                 example: "تهران"
  *             required:
+ *               - address
  *               - province
  *               - city
  *
@@ -230,12 +242,21 @@ router.get('/get_profile', is_auth, UserController.getProfile);
  *                     phone:
  *                       type: string
  *                       example: "09123456789"
- *                     postal_code:
+ *                     father_name:
  *                       type: string
- *                       example: "1234567890"
- *                     landline_phone:
+ *                       example: "حسن"
+ *                     village:
  *                       type: string
- *                       example: "02144556677"
+ *                       example: "فرهادآباد"
+ *                     birth_date:
+ *                       type: string
+ *                       example: "1990-01-01"
+ *                     ownership_type:
+ *                       type: string
+ *                       example: "personal"
+ *                     profile_image:
+ *                       type: string
+ *                       example: "/uploads/profile.jpg"
  *                     address:
  *                       type: string
  *                       example: "تهران، خیابان آزادی"
@@ -247,7 +268,7 @@ router.get('/get_profile', is_auth, UserController.getProfile);
  *                       example: "تهران"
  *
  *       400:
- *         description: درخواست نامعتبر (استان و شهر الزامی هستند).
+ *         description: درخواست نامعتبر (آدرس، استان و شهر الزامی هستند).
  *         content:
  *           application/json:
  *             schema:
@@ -255,7 +276,7 @@ router.get('/get_profile', is_auth, UserController.getProfile);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "استان و شهر الزامی هستند!"
+ *                   example: "تمامی فیلد های آدرس مورد نیاز هستند!"
  *
  *       404:
  *         description: کاربر مورد نظر پیدا نشد.
@@ -279,6 +300,19 @@ router.get('/get_profile', is_auth, UserController.getProfile);
  *                   type: string
  *                   example: "Internal server error!"
  */
-router.put('/complete_profile', is_auth, UserController.completeProfile);
+router.put("/complete_profile", is_auth, UserController.completeProfile);
+
+router.get("/get_users", UserController.getAllUsers);
+
+router.post(
+  "/upload-profile-image",
+  is_auth,
+  UploadController.uploadProfileImage
+);
+router.delete(
+  "/delete-profile-image",
+  is_auth,
+  UploadController.deleteProfileImage
+);
 
 export default router;

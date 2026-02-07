@@ -4,8 +4,8 @@ import { User } from "../models/User.js";
 export function ensureProfileComplete(user: User) {
   // List of nullable fields that must be filled to consider the profile "complete"
   const requiredFields: (keyof User)[] = [
-    "postal_code",
-    "landline_phone",
+    // "postal_code",
+    // "landline_phone",
     "address",
     "province",
     "city"
