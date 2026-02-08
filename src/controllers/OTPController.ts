@@ -67,7 +67,7 @@ export class OTPController {
       });
 
       const message = `کد تایید شما: ${otpCode}\nویدا`;
-      await sendSMS(phone, message);
+      await sendSMS({phone, message});
 
       return res.status(200).json({ message: "OTP code sent successfully!" });
     } catch (error: any) {
